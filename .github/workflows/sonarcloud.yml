@@ -15,33 +15,34 @@ jobs:
   Analysis:
     runs-on: ubuntu-latest
     env:
-      BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Папка для логів збірки
+      BUILD_WRAPPER_OUT_DIR: bw-output # Папка для логів враппера
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Це дозволяє бачити історію комітів
+          fetch-depth: 0
 
-      # 1. Встановлюємо Build Wrapper (обов'язково для C/C++)
+      # 1. Встановлюємо Build Wrapper вручну (бо екшену немає)
       - name: Install Build Wrapper
-        uses: SonarSource/sonarcloud-github-c-cpp@v3
-
-      # 2. Збираємо проект (ЦЕ ГОЛОВНЕ, ЩО ТИ ПРОПУСТИВ)
-      - name: Run Build Wrapper
         run: |
-          # В цьому рядку заміни 'g++ *.cpp -o myapp' на твою команду компіляції!
-          # Наприклад: make, або cmake --build ., або g++ main.c -o app
-          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} g++ *.cpp -o myapp
+          curl -sSLo build-wrapper.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+          unzip -o build-wrapper.zip
 
-      # 3. Запускаємо аналіз
+      # 2. Компілюємо код через враппер
+      # УВАГА: ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 — це шлях до скачаної утиліти
+      - name: Build project
+        run: |
+          # ТУТ ВПИШИ СВОЮ КОМАНДУ КОМПІЛЯЦІЇ ЗАМІСТЬ g++ ...
+          ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} g++ *.cpp -o myapp
+
+      # 3. Запускаємо аналізатор
       - name: Analyze with SonarCloud
-        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          # Вказуємо шлях до звіту, який створив крок 2
           args: >
             -Dsonar.projectKey=RoshkoArtem_simple_math_lib
             -Dsonar.organization=roshkoartem
