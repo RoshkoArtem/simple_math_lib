@@ -1,0 +1,38 @@
+name: SonarCloud analysis
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read          # щоб SonarCloud міг читати код
+  pull-requests: read     # щоб залишати коментарі в PR
+
+jobs:
+  Analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # краще для аналізу історії
+
+      - name: Analyze with SonarCloud
+        # можна вказати версію по тегу
+        # uses: SonarSource/sonarcloud-github-action@v2.2.0
+        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # вбудований токен GitHub
+          SONAR_TOKEN:  ${{ secrets.SONAR_TOKEN }}    # ти створюєш цей секрет у Settings -> Secrets -> Actions
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=RoshkoArtem_simple_math_lib
+            -Dsonar.organization=roshkoartem
+            -Dsonar.sources=.
+            -Dsonar.cfamily.build-wrapper-output=.
+            -Dsonar.verbose=false
