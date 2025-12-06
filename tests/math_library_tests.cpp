@@ -6,15 +6,14 @@
 class MathLibTestFixture : public ::testing::Test
 {
 protected:
-
     void SetUp() override
     {
-		// Do some job before test run
+        // Do some job before test run
     }
 
     void TearDown() override
     {
-		// Do some job after test run
+        // Do some job after test run
     }
 };
 
@@ -50,10 +49,12 @@ TEST_F(MathLibTestFixture, DivideByZero)
 
 TEST_F(MathLibTestFixture, SquareRoot)
 {
-    //EXPECT_EQ(MathLib::isEqual(MathLib::sqrt(0), 0));
-    //EXPECT_EQ(MathLib::isEqual(MathLib::sqrt(1.231), 1.1095));
-    //EXPECT_EQ(MathLib::isEqual(MathLib::sqrt(16), 4));
-    //EXPECT_EQ(MathLib::isEqual(MathLib::sqrt(123), 11.0905));
+    // При бажанні можна розкоментувати й перевіряти наближені значення:
+    // EXPECT_TRUE(MathLib::isEqual(MathLib::sqrt(0), 0));
+    // EXPECT_TRUE(MathLib::isEqual(MathLib::sqrt(1.231), 1.1095));
+    // EXPECT_TRUE(MathLib::isEqual(MathLib::sqrt(16), 4));
+    // EXPECT_TRUE(MathLib::isEqual(MathLib::sqrt(123), 11.0905));
+
     EXPECT_THROW(MathLib::sqrt(-1), std::invalid_argument);
 }
 
@@ -62,7 +63,7 @@ TEST_F(MathLibTestFixture, LeastCommonMultiple)
     EXPECT_EQ(MathLib::leastCommonMultiple(4, 6), 12);
     EXPECT_EQ(MathLib::leastCommonMultiple(7, 5), 35);
     EXPECT_EQ(MathLib::leastCommonMultiple(10, 5), 10);
-    EXPECT_NE(MathLib::leastCommonMultiple(4,6), 3);
+    EXPECT_NE(MathLib::leastCommonMultiple(4, 6), 3);
 }
 
 TEST_F(MathLibTestFixture, IsPrimeTest)
