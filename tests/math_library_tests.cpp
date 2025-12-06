@@ -9,12 +9,12 @@ protected:
 
     void SetUp() override
     {
-		// Do some job before test run
+        // Do some job before test run
     }
 
     void TearDown() override
     {
-		// Do some job after test run
+        // Do some job after test run
     }
 };
 
@@ -62,7 +62,7 @@ TEST_F(MathLibTestFixture, LeastCommonMultiple)
     EXPECT_EQ(MathLib::leastCommonMultiple(4, 6), 12);
     EXPECT_EQ(MathLib::leastCommonMultiple(7, 5), 35);
     EXPECT_EQ(MathLib::leastCommonMultiple(10, 5), 10);
-    EXPECT_NE(MathLib::leastCommonMultiple(4,6), 3);
+    EXPECT_NE(MathLib::leastCommonMultiple(4, 6), 3);
 }
 
 TEST_F(MathLibTestFixture, IsPrimeTest)
@@ -76,4 +76,23 @@ TEST_F(MathLibTestFixture, IsPrimeTest)
 TEST_F(MathLibTestFixture, GreatestCommonDivider)
 {
     EXPECT_EQ(MathLib::GCD(10, 6), 2);
+}
+
+// 🔹 NEW TESTS: thirdAngle
+
+TEST_F(MathLibTestFixture, ThirdAngleValid)
+{
+    EXPECT_TRUE(MathLib::isEqual(MathLib::thirdAngle(60.0, 60.0), 60.0));
+    EXPECT_TRUE(MathLib::isEqual(MathLib::thirdAngle(30.0, 90.0), 60.0));
+    EXPECT_TRUE(MathLib::isEqual(MathLib::thirdAngle(45.0, 45.0), 90.0));
+}
+
+TEST_F(MathLibTestFixture, ThirdAngleInvalid)
+{
+    // zero angle
+    EXPECT_THROW(MathLib::thirdAngle(0.0, 60.0), std::invalid_argument);
+    // negative angle
+    EXPECT_THROW(MathLib::thirdAngle(-10.0, 60.0), std::invalid_argument);
+    // sum >= 180
+    EXPECT_THROW(MathLib::thirdAngle(120.0, 70.0), std::invalid_argument);
 }
