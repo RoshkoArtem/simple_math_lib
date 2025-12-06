@@ -15,7 +15,7 @@ jobs:
   Analysis:
     runs-on: ubuntu-latest
     env:
-      BUILD_WRAPPER_OUT_DIR: bw-output # Папка для логів враппера
+      BUILD_WRAPPER_OUT_DIR: bw-output
 
     steps:
       - name: Checkout repository
@@ -23,20 +23,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 1. Встановлюємо Build Wrapper вручну (бо екшену немає)
+      # 1. Скачуємо Build Wrapper
       - name: Install Build Wrapper
         run: |
           curl -sSLo build-wrapper.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -o build-wrapper.zip
 
-      # 2. Компілюємо код через враппер
-      # УВАГА: ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 — це шлях до скачаної утиліти
+      # 2. Компілюємо (FIX: шукаємо .cpp файли всюди, а не тільки в корені)
       - name: Build project
         run: |
-          # ТУТ ВПИШИ СВОЮ КОМАНДУ КОМПІЛЯЦІЇ ЗАМІСТЬ g++ ...
-          ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} g++ *.cpp -o myapp
+          # Ця команда знайде всі .cpp файли у всіх папках і скомпілює їх
+          # Використовуємо -c (compile only), щоб не було помилок лінкування, якщо немає main()
+          ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} g++ -c $(find . -name "*.cpp")
 
-      # 3. Запускаємо аналізатор
+      # 3. Аналізуємо
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@master
         env:
