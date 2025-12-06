@@ -29,14 +29,16 @@ jobs:
           curl -sSLo build-wrapper.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -o build-wrapper.zip
 
-      # 2. Компілюємо (FIX: шукаємо .cpp файли всюди, а не тільки в корені)
-      - name: Build project
-        run: |
-          # Ця команда знайде всі .cpp файли у всіх папках і скомпілює їх
-          # Використовуємо -c (compile only), щоб не було помилок лінкування, якщо немає main()
-          ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} g++ -c $(find . -name "*.cpp")
+      # 2. Налаштовуємо CMake
+      - name: Configure CMake
+        run: cmake -B build -S .
 
-      # 3. Аналізуємо
+      # 3. Збираємо проект через Build Wrapper
+      - name: Build with Wrapper
+        run: |
+          ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build
+
+      # 4. Аналізуємо (вказуємо правильні шляхи)
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@master
         env:
@@ -46,6 +48,6 @@ jobs:
           args: >
             -Dsonar.projectKey=RoshkoArtem_simple_math_lib
             -Dsonar.organization=roshkoartem
-            -Dsonar.sources=.
+            -Dsonar.sources=src
             -Dsonar.cfamily.build-wrapper-output=${{ env.BUILD_WRAPPER_OUT_DIR }}
             -Dsonar.verbose=false
